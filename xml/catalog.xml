@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+
+  <!-- Les URI des Namespace -->
+  <uri name="http://www.w3.org/XML/1998/namespace"               uri="xml.xsd"/>
+  <uri name="http://www.w3.org/2001/XMLSchema-instance"          uri="XMLSchema-instance.xsd"/>
+  <uri name="http://www.w3.org/2001/XMLSchema"                   uri="XMLSchema.xsd"/>
+  <uri name="http://purl.org/dc/elements/1.1/"                   uri="dc.xsd"/>
+  <uri name="http://purl.org/dc/terms/"                          uri="dc_terms.xsd"/>
+  <uri name="http://purl.org/dc/dcmitype/"                       uri="dcmitype.xsd"/>
+  <uri name="http://bibnum.bnf.fr/ns/spar_dc"                    uri="spar_dc.xsd"/>
+  <uri name="http://www.loc.gov/METS/"                           uri="mets.xsd"/>
+  <uri name="http://www.w3.org/1999/xlink"                       uri="xlink.xsd"/>
+  <uri name="info:lc/xmlns/premis-v2"                            uri="premis-v2-3.xsd"/>
+  <uri name="http://www.loc.gov/premis/v3"                       uri="premis-v3-0.xsd"/>
+  <uri name="http://www.loc.gov/mix/v20"                         uri="mix.xsd" />
+  <uri name="http://www.loc.gov/mix/v10"                         uri="mix10.xsd" />
+  <uri name="info:lc/xmlns/textMD-v3"                            uri="textMD-v3.01a.xsd" />
+  <uri name="http://bibnum.bnf.fr/ns/containerMD-v1"             uri="containerMD-v1_2.xsd" />
+
+
+  <!-- Les URI des SchemaLocation -->
+  <uri name="http://www.w3.org/2001/03/xml.xsd"                  uri="xml.xsd"/>
+  <uri name="http://www.w3.org/2001/XMLSchema.xsd"              uri="XMLSchema.xsd"/>
+  <uri name="http://dublincore.org/schemas/xmls/qdc/dc.xsd"      uri="dc.xsd"/>
+  <uri name="http://dublincore.org/schemas/xmls/qdc/dcterms.xsd" uri="dcterms.xsd"/>
+  <uri name="http://dublincore.org/schemas/xmls/qdc/dcmitype.xsd" uri="dcmitype.xsd"/>
+  <uri name="http://bibnum.bnf.fr/ns/spar_dc.xsd"                uri="spar_dc.xsd"/>
+  <uri name="http://www.loc.gov/standards/mets/mets.xsd"         uri="mets.xsd"/>
+  <uri name="http://www.loc.gov/standards/xlink/xlink.xsd"       uri="xlink.xsd"/>
+  <uri name="http://www.loc.gov/standards/premis/premis.xsd"     uri="premis-v2-3.xsd"/>
+  <uri name="http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" uri="premis-v3-0.xsd"/>
+  <uri name="http://www.loc.gov/standards/mix/mix.xsd"           uri="mix.xsd"/>
+  <uri name="http://www.loc.gov/standards/mix/mix10/mix10.xsd"   uri="mix10.xsd"/>
+  <uri name="http://www.loc.gov/standards/textMD/textMD-v3.01a.xsd" uri="textMD-v3.01a.xsd"/>
+  <uri name="http://www.loc.gov/standards/mets/mets2.xsd"        uri="mets2.xsd"/>
+  <uri name="http://bibnum.bnf.fr/schema/containerMD-v1_2.xsd"   uri="containerMD-v1_2.xsd" />
+
+
+http://www.w3.org/2001/XMLSchema-instance
+</catalog>

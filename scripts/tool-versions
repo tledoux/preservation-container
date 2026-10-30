@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+set -u
+
+OUTPUT="${1:-/mnt/output/tool-versions.json}"
+
+mkdir -p "$(dirname "$OUTPUT")"
+
+export LC_ALL=C
+
+python3 - "$OUTPUT" <<'PY'
+import json
+import os
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+output = sys.argv[1]
+
+# Commande, arguments permettant d'obtenir la version.
+checks = {
+    "bash": ["bash", "--version"],
+    "wc": ["wc", "--version"],
+    "file": ["file", "--version"],
+    "od": ["od", "--version"],
+    "stat": ["stat", "--version"],
+    "sha256sum": ["sha256sum", "--version"],
+    "b3sum": ["b3sum", "--version"],
+    "xxd": ["xxd", "-v"],
+    "exiftool": ["exiftool", "-ver"],
+    "mediainfo": ["mediainfo", "--Version"],
+    "ffprobe": ["ffprobe", "-version"],
+    "rhash": ["rhash", "--version"],
+    "java": ["java", "-version"],
+    "sf": ["sf", "-version"],
+    "droid": ["droid", "--version"],
+    "jhove": ["jhove", "-h"],
+    "verapdf": ["verapdf", "-h"],
+    "pdfbox": ["pdfbox", "version"],
+    "tika": ["java", "-jar", "/opt/tika/tika-app.jar", "--version"],
+    "jpylyzer": ["jpylyzer", "-v"],
+    "ffmpeg": ["ffmpeg", "-version"],
+    "jq": ["jq", "--version"],
+    "xmllint": ["xmllint", "--version"],
+    "xmlstarlet": ["xmlstarlet", "--version"],
+    "python3": ["python3", "--version"],
+    "bagit.py": ["bagit.py", "--version"],
+    "git": ["git", "--version"],
+    "curl": ["curl", "--version"],
+    "tar": ["tar", "--version"],
+    "gzip": ["gzip", "--version"],
+    "openssl": ["openssl", "version"],
+}
+tools = {}
+
+for name, command in sorted(checks.items()):
+    if not __import__("shutil").which(command[0]):
+        tools[name] = {
+            "status": "not_installed",
+            "version": "",
+        }
+        continue
+
+    try:
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            timeout=10,
+            check=False,
+            env={**os.environ, "LC_ALL": "C"},
+        )
+        if name == "mediainfo":
+            first_line = result.stdout.replace("\n", "")
+        else:
+            first_line = next(
+                (line.strip() for line in result.stdout.splitlines()
+                 if line.strip()),
+                None,
+            )
+
+        tools[name] = {
+            "status": "ok" if result.returncode == 0 else "version_check_failed",
+            "version": first_line[:300] if first_line else None,
+        }
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        tools[name] = {
+            "status": "version_check_failed",
+            "version": None,
+            "error": type(exc).__name__,
+        }
+
+data = {
+    "schema_version": "1.0",
+    "generated_at": datetime.now(timezone.utc).isoformat(),
+    "hostname": os.uname().nodename,
+    "tools": tools,
+}
+
+with open(output, "w", encoding="utf-8") as f:
+    json.dump(data, f, ensure_ascii=False, indent=2)
+    f.write("\n")
+
+print(f"Inventaire logiciel écrit dans : {output}")
+PY

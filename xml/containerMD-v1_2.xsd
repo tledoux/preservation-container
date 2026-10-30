@@ -1,0 +1,1644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Organisme/maintainer : Bibliothèque nationale de France
+Schéma XML pour les métadonnées d'un fichier conteneur.
+XML Schema for container file metadata
+
+Version 1.2; 2020-09-03
+add diskImageContainer, with diskImageType, sourceMediaType, and fileSystem elements (Robin Wendler, Harvard)
+encodingEnvironment, encodingPlatform, encodingSoftware, encodingSoftwareName, encodingSoftwareVersion changed to creatingEnvironment, creatingPlatform, creatingSoftware, creatingSoftwareName, creatingSoftwareVersion.
+Auteurs/authors : Robin Wendler, Bertrand Caron, Jean-Philippe Tramoni
+
+Version 1.1 du 25 septembre 2014
+suppression de WARCContainer dans container / WARCContainer deleted in container
+ajout de originalName dans container / originalName added in container
+modification de WARCExtension dans entries/entriesInformation / WARCExtension modified in entries/entriesInformation 
+
+Version 1.0 du 28 septembre 2011
+Version initiale 
+Auteurs/authors : Thomas Ledoux, Sébastien Peyrard, Jean-Philippe Tramoni
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns="http://bibnum.bnf.fr/ns/containerMD-v1"
+	xmlns:containerMD="http://bibnum.bnf.fr/ns/containerMD-v1"
+	targetNamespace="http://bibnum.bnf.fr/ns/containerMD-v1" elementFormDefault="unqualified"
+	attributeFormDefault="unqualified" version="1.2">
+	<!-- Import XLink-->
+	<xs:import namespace="http://www.w3.org/1999/xlink"
+		schemaLocation="http://www.loc.gov/standards/xlink/xlink.xsd"/>
+	<!-- Root element declaration -->
+	<xs:element name="containerMD" type="containerMDComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Root element. ContainerMD.xsd is an XML schema for
+				technical metadata about a container file.</xs:documentation>
+			<xs:documentation xml:lang="fr">Elément racine. ContainerMD.xsd est un schéma XML pour
+				les métadonnées techniques d'un fichier conteneur.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- Definitions of complex types -->
+	<xs:complexType name="containerMDComplexType">
+		<xs:sequence>
+			<xs:element ref="container">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information about the container file
+						itself.</xs:documentation>
+					<xs:documentation xml:lang="fr">Informations sur le fichier conteneur
+						lui-même.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="entries" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information about the entries a container file
+						comprises.</xs:documentation>
+					<xs:documentation xml:lang="fr">Informations sur les entrées que comprend un
+						fichier conteneur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="containerComplexType">
+		<xs:sequence>
+			<xs:element ref="fixity" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Fixity information on the container
+						file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Information d'intégrité sur le fichier
+						conteneur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- addition de originalName pour passage à la version 1.1 -->
+			<xs:element ref="originalName" minOccurs="0"/>
+			<xs:element ref="formatDesignation" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information on the format of the container
+						file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Informations sur le format du fichier
+						conteneur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="encoding" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information on a particular encoding at
+						container file level.</xs:documentation>
+					<xs:documentation xml:lang="fr">Informations sur un encodage particulier au
+						niveau du fichier conteneur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="creatingEnvironment" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information about the environment on which the
+						container file was created.</xs:documentation>
+					<xs:documentation xml:lang="fr">Informations sur l'environnement sur lequel le
+						fichier conteneur a été produit.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="assessmentInformation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Assessment of the container file by a particular
+						tool.</xs:documentation>
+					<xs:documentation xml:lang="fr">Evaluation du fichier conteneur par un outil
+						particulier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="containerExtension" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information fields specific to a particular
+						container type.</xs:documentation>
+					<xs:documentation xml:lang="fr">Informations spécifiques à un type de conteneur
+						donné.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="ID" type="xs:ID" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">ID for the described object.</xs:documentation>
+				<xs:documentation xml:lang="fr">Identifiant pour l'objet décrit.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="creationDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Creation date of the descibed object, expressed
+					under the form of an xs:dateTime.</xs:documentation>
+				<xs:documentation xml:lang="fr">Date de création de l'objet décrit au formalisme
+					xs:dateTime.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="lastModificationDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Last modification date of the descibed object,
+					expressed under the form of an xs:dateTime.</xs:documentation>
+				<xs:documentation xml:lang="fr">Date de dernière modification de l'objet décrit, au
+					formalisme xs:dateTime.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="formatDesignationComplexType">
+		<xs:sequence>
+			<xs:element ref="formatName" maxOccurs="unbounded"/>
+			<xs:element ref="formatVersion" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="creatingEnvironmentComplexType">
+		<xs:sequence>
+			<xs:element ref="creatingPlatform" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="creatingSoftware" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information about the software which created the
+						container file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Informations sur le logiciel ayant produit le
+						fichier conteneur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="assessmentInformationComplexType">
+		<xs:sequence>
+			<xs:element ref="outcome" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Assessment made by a particular tool on the
+						container file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Evaluation effectuée par un outil particulier
+						sur le fichier conteneur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="outcomeDetailNote" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Additional information about the assessment of
+						the container file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Information additionnelle sur l'évaluation du
+						fichier conteneur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="agentName" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Name of the software which performed the assessment,
+					for instance "jhove2".</xs:documentation>
+				<xs:documentation xml:lang="fr">Nom du logiciel ayant effectué l'évaluation, par
+					exemple "jhove2".</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="agentVersion" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Version of the software which performed the
+					assessment.</xs:documentation>
+				<xs:documentation xml:lang="fr">Version du logiciel ayant effectué
+					l'évaluation.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="containerExtensionComplexType">
+		<xs:choice>
+			<xs:element ref="ARCContainer"/>
+			<xs:element ref="ZIPContainer"/>
+			<xs:element ref="TARContainer"/>
+			<!-- élement supprimé en version 1.1
+			<xs:element ref="WARCContainer"/>
+			-->
+			<!-- Proposed new value per Harvard/AVPreserve -->
+			<xs:element ref="diskImageContainer"/>
+			<xs:element ref="other"/>
+		</xs:choice>
+		<xs:attribute name="ID" type="xs:ID" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">ID assigned to a particular containerExtension
+					section.</xs:documentation>
+				<xs:documentation xml:lang="fr">Identifiant attribué à une section
+					containerExtension particulière.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="ARCContainerComplexType">
+		<xs:sequence>
+			<xs:element ref="fileName" minOccurs="0"/>
+			<xs:element ref="ipAddress" minOccurs="0"/>
+			<xs:element ref="creationDateTime" minOccurs="0"/>
+			<xs:element ref="profile" minOccurs="0"/>
+			<xs:element ref="originCode" minOccurs="0"/>
+			<xs:element ref="versionBlockPayload" minOccurs="0"/>
+			<xs:element ref="mdSec" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Additional information about the container file,
+						comprised in the version-block. This section can be used to store the
+						analysis of a data object comprised in the version-block, e.g. the
+						&lt;arcmetadata&gt; XML file that can be found in a ARC 1.1
+						file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Information complémentaire sur le fichier
+						conteneur, présente dans le version-block. Cette section peut être utilisée
+						pour consigner l'analyse d'un Objet-données compris dans le version-block,
+						par exemple le fichier XML &lt;arcmetadata&gt; que l'on trouve dans un
+						fichier ARC 1.1.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="creatingSoftwareComplexType">
+		<xs:sequence>
+			<xs:element ref="creatingSoftwareName"/>
+			<xs:element ref="creatingSoftwareVersion" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Entries declaration -->
+	<xs:complexType name="entriesComplexType">
+		<xs:sequence>
+			<xs:element ref="entriesInformation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information about the entries of a container
+						file in an aggregated, non-verbose fashion. This section allows to restrain
+						the metadata volume to be expressed, especially when the container files
+						comprises a great number of entries. </xs:documentation>
+					<xs:documentation xml:lang="fr">Informations sur les entrées d'un fichier
+						conteneur, en mode non verbeux. Cette section donne la possibilité de
+						réduire au besoin le volume de métadonnées à exprimer, notamment lorsque le
+						fichier conteneur comprend un très grand nombre d'entrées.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Global entries information -->
+	<xs:complexType name="entriesInformationComplexType">
+		<xs:sequence>
+			<xs:element ref="formats" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">List of the formats of the entries in the
+						container file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Liste des formats des entrées comprises dans le
+						fichier conteneur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="encodings" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">List of the encodings used on the entries of the
+						container file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Liste des encodages utilisés pour les entrées du
+						fichier conteneur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="entriesExtension" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Aggregated information specific to a particular
+						container type.</xs:documentation>
+					<xs:documentation xml:lang="fr">Informations agrégées spécifiques à un type de
+						conteneur donné.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="number" type="xs:nonNegativeInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Number of entries in the container
+					file.</xs:documentation>
+				<xs:documentation xml:lang="fr">Nombre d'entrées dans ce fichier
+					conteneur.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="minimumSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Size of the smallest entry in bytes. This field does
+					not take compression into account; therefore, if the entry has been compressed,
+					this field records its compressed size.</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille de la plus petite entrée en octets. Ce champ
+					est agnostique vis-à-vis de la compression ; si l'entrée est compressée, il
+					exprime donc sa taille compressée. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="maximumSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Size of the biggest entry in bytes. This field does
+					not take compression into account; therefore, if the entry has been compressed,
+					this field records its compressed size.</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille de la plus grande entrée en octets. Ce champ
+					est agnostique vis-à-vis de la compression ; si l'entrée est compressée, il
+					exprime donc sa taille compressée.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="firstDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Date of the earliest entry, expressed under the form
+					of an xs:dateTime.</xs:documentation>
+				<xs:documentation xml:lang="fr">Date la plus ancienne d’une entrée au formalisme
+					xs:dateTime.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="lastDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Date of the latest entry, expressed in an
+					xs:dateTime fashion.</xs:documentation>
+				<xs:documentation xml:lang="fr">Date la plus récente d’une entrée au formalisme
+					xs:dateTime.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="globalSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Size in bytes of all the entries contained by the
+					container file.</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille en octet de l'ensemble des entrées comprises
+					dans le fichier conteneur.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="encodingsComplexType">
+		<xs:sequence>
+			<xs:element ref="encoding" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="formatsComplexType">
+		<xs:sequence>
+			<xs:element ref="format" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">A particular format for some or all entries in
+						the container file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Format particulier de tout ou partie des entrées
+						du fichier conteneur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="formatComplexType">
+		<xs:attribute name="name" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Format name. Recommended best practice is to use a
+					MIME type.</xs:documentation>
+				<xs:documentation xml:lang="fr">Nom du format. Il est recommandé d'utiliser un type
+					MIME.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="version" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Format version.</xs:documentation>
+				<xs:documentation xml:lang="fr">Version de format.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="number" type="xs:nonNegativeInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Number of entries for the format as described by the
+					"format" element. For instance, if only the format name is recorded, "number"
+					will count the number of entries corresponding to format name. If the format
+					version is also recorded, "number" will count the number of entries
+					corresponding to a given format name AND version.</xs:documentation>
+				<xs:documentation xml:lang="fr">Nombre d'entrées correspondant au format tel que
+					décrit par l’élément format. Par exemple, si seul le nom de format est consigné,
+					"number" comptera le nombre d'entrées correspondant à ce nom de format. Si l'on
+					consigne aussi la version du format, "number" comptera le nombre d'entrées
+					correspondant à un nom ET une version de format.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="globalSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Total size, in bytes, of all the files in a given
+					format. This field does not take compression into account ; therefore, if some
+					or all entries have been compressed, this field uses their compressed size for
+					the addition.</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille complète, en octets, de l'ensemble des
+					fichiers dans un format donné. Cet élément est agnostique vis-à-vis de la
+					compression ; si certains fichiers sont compressés, il prend donc en compte leur
+					taille compressée pour effectuer la somme.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="entriesExtensionComplexType">
+		<xs:choice>
+			<xs:element ref="ARCEntries"/>
+			<xs:element ref="ZIPEntries"/>
+			<xs:element ref="TAREntries"/>
+			<xs:element ref="WARCEntries"/>
+			<xs:element ref="other"/>
+		</xs:choice>
+		<xs:attribute name="ID" type="xs:ID" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">ID assigned to a particular entriesExtension
+					section.</xs:documentation>
+				<xs:documentation xml:lang="fr">Identifiant assigné à une section entriesExtension
+					particulière.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="ARCEntriesComplexType">
+		<xs:sequence>
+			<xs:element ref="declaredMimeTypes" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">List of the MIME types declared in the ARC
+						file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Liste des types MIME déclarés dans le fichier
+						ARC.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="hosts" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">List of the harvested hosts for a given ARC
+						file.</xs:documentation>
+					<xs:documentation xml:lang="fr">Liste des hôtes collectés pour un fichier ARC
+						particulier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="responses" minOccurs="0"> </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="declaredMimeTypesComplexType">
+		<xs:sequence>
+			<xs:element ref="declaredMimeType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Particular declared MIME
+						type.</xs:documentation>
+					<xs:documentation xml:lang="fr">Type MIME particulier
+						déclaré.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="declaredMimeTypeComplexType" mixed="true">
+		<xs:attribute name="number" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Number of entries declared under this MIME
+					type.</xs:documentation>
+				<xs:documentation xml:lang="fr">Nombre d'entrées déclarées sous ce type
+					MIME.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="globalSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Size in bytes of all the entries declared under this
+					MIME type</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille en octets de l'ensemble des entrées déclarées
+					sous ce type MIME.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="hostsComplexType">
+		<xs:sequence>
+			<xs:element ref="host" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Particular harvested host.</xs:documentation>
+					<xs:documentation xml:lang="fr">Hôte particulier collecté.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="hostComplexType" mixed="true">
+		<xs:attribute name="number" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Number of URLs corresponding to this
+					host.</xs:documentation>
+				<xs:documentation xml:lang="fr">Nombre d’URL correspondant à cet
+					hôte.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="globalSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Size in bytes of all the data corresponding to this
+					host.</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille en octets de l’ensemble des données
+					correspondant à cet hôte.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="responsesComplexType">
+		<xs:sequence>
+			<xs:element ref="response" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Particular response of a harvested site's server
+						to the harvesting tool. Its nature depends on the protocol involved. For
+						example in case it is an HTTP protocol, the value of response will be an
+						HTTP status code.</xs:documentation>
+					<xs:documentation xml:lang="fr">Réponse particulière du serveur d'un site
+						collecté à l'outil de collecte. La nature de cette réponse dépend du
+						protocol utilisé. Par exemple, dans le cas d'un protocole HTTP, response
+						aura pour valeur un code HTTP.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="responseComplexType" mixed="true">
+		<xs:attribute name="number" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Number of entries corresponding to this response
+					element.</xs:documentation>
+				<xs:documentation xml:lang="fr">Nombre d’entrées correspondant à cet élément
+					response.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="protocolName" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Protocol name, for example HTTP, HTTPS,
+					DNS...</xs:documentation>
+				<xs:documentation xml:lang="fr">Nom du protocole, par exemple : HTTP, HTTPS,
+					DNS…</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="protocolVersion" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Protocol version, if any.</xs:documentation>
+				<xs:documentation xml:lang="fr">Version du protocole, le cas
+					échéant.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="globalSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Size in bytes of all the entries corresponding to
+					this response element.</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille en octets de l'ensemble des entrées
+					correspondant à cet élément response.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="entryComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Information about a particular entry comprised in a
+				container file.</xs:documentation>
+			<xs:documentation xml:lang="fr">Informations sur une entrée particulière d'un fichier
+				conteneur.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="fixity" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="formatDesignation" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="encoding" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="entryExtension"/>
+				<xs:element ref="mdSec">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">This element allows to wrap or
+							reference technical metadata about the file corresponding to the entry.
+							It allows thus to include MIX to characterize an image file, textMD for
+							a text file, LC_AV or MPEG-7 for audiovisual files, documentMD for PDF
+							or office files, etc. or to reference externally this metadata. If the
+							file corresponding to the entry is itself a container file (with entry
+							type="container"), the container can itself be characterized in
+							containerMD through this mechanism.</xs:documentation>
+						<xs:documentation xml:lang="fr">Cet élément permet d'inclure ou de faire
+							référence à des métadonnées techniques portant le fichier correspondant
+							à cette entrée. Il permet ainsi d’inclure MIX pour caractériser un
+							fichier image, textMD pour un fichier texte, LC_AV ou MPEG7 pour des
+							fichiers audiovisuels, documentMD pour les fichiers de type PDF ou
+							bureautique, etc., ou de faire référence à un fichier comprenant ces
+							métadonnées. Dans le cas où le fichier correspondant à l’entrée est
+							lui-même un fichier conteneur (entry type="container"), le conteneur
+							peut être lui-même caractérisé en containerMD par l’intermédiaire de ce
+							mécanisme.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="ID" type="xs:ID" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">ID assigned to the entry.</xs:documentation>
+				<xs:documentation xml:lang="fr">Identifiant assigné à l'entrée.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="order" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Order of the entry inside the container file,
+					expressed as a positive integer.</xs:documentation>
+				<xs:documentation xml:lang="fr">Numéro d’ordre de l’entrée au sein du fichier
+					conteneur, exprimée sous la forme d’un entier positif.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:positiveInteger"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="type" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Entry type. The enumerated values are based on the
+					entry types in the TAR format. See
+					http://en.wikipedia.org/wiki/Tar_%28file_format%29.</xs:documentation>
+				<xs:documentation xml:lang="fr">Type d'éntrée. La liste des valeurs possibles est
+					fondée sur la liste des types d'entrées dans le format TAR. Cf.
+					http://en.wikipedia.org/wiki/Tar_%28file_format%29.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="file"/>
+					<xs:enumeration value="directory"/>
+					<xs:enumeration value="hardLink"/>
+					<xs:enumeration value="symbolicLink"/>
+					<xs:enumeration value="characterSpecial"/>
+					<xs:enumeration value="blockSpecial"/>
+					<xs:enumeration value="fifo"/>
+					<xs:enumeration value="other"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="begin" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Begin offset of the entry inside the container
+					file.</xs:documentation>
+				<xs:documentation xml:lang="fr">Offset de début de l’entrée au sein du fichier
+					conteneur.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:nonNegativeInteger"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="end" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">End offset of the entry inside the container
+					file.</xs:documentation>
+				<xs:documentation xml:lang="fr">Offset de fin de l’entrée au sein du fichier
+					conteneur.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:nonNegativeInteger"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="name" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Name of the entry. This name can include the folder
+					hierarchy if the entry is named after its path, but it can also be a URL or any
+					kind of access point to this entry.</xs:documentation>
+				<xs:documentation xml:lang="fr">Nom de l’entrée. Ce nom peut inclure l’arborescence
+					si chaque entrée est référencée avec son arborescence, mais il peut également
+					s’agir d’une URL ou tout autre type de point d’accès.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="creationDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Creation date of the entry, expressed under the form
+					of an xs:dateTime.</xs:documentation>
+				<xs:documentation xml:lang="fr">Date de création de l'entrée au formalisme
+					xs:dateTime.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="lastModificationDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Last modification date of the entry, expressed under
+					the form of an xs:dateTime.</xs:documentation>
+				<xs:documentation xml:lang="fr">Date de dernière modification de l'entrée au
+					formalisme xs:dateTime.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- Proposed addition per Harvard/AVPreserve -->
+	<xs:complexType name="fileSystemComplexType" mixed="true">
+		<xs:sequence>
+			<xs:element ref="fileSystemType" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="bytesPerSector" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">The size of a sector in the file system, expressed
+					in bytes, in base 10.</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille d'un secteur du système de fichiers, exprimé en octets en base 10.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="sectorCount" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">The number of sectors in the file system, expressed
+					in base 10.</xs:documentation>
+				<xs:documentation xml:lang="fr">Nombre de secteurs du système de fichiers, exprimé en base 10.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- Proposed addition per Harvard/AVPreserve -->
+	<xs:complexType name="stringPlusUriComplexType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="uri" type="xs:anyURI"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- Simple type elements -->
+	<xs:element name="formatName" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Format name of the described object. Recommended best
+				practice is to use MIME types.</xs:documentation>
+			<xs:documentation xml:lang="fr">Nom du format de l'objet décrit. L'utilisation de MIME
+				types est recommandée.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="formatVersion" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Format version of the described
+				object.</xs:documentation>
+			<xs:documentation xml:lang="fr">Version du format de l'objet décrit.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="creatingPlatform" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Platform on which the container file was created:
+				operating system, hardware environment, etc.</xs:documentation>
+			<xs:documentation xml:lang="fr">Plateforme sur laquelle le fichier conteneur a été créé :
+				système d'exploitation, environnement matériel, etc.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="creatingSoftwareName" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Name of the software.</xs:documentation>
+			<xs:documentation xml:lang="fr">Nom du logiciel.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="creatingSoftwareVersion" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Version of the software.</xs:documentation>
+			<xs:documentation xml:lang="fr">Version du logiciel.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="encodingComplexType">
+		<xs:attribute name="type" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Encoding type. Two possible values: "compression" or
+					"encryption".</xs:documentation>
+				<xs:documentation xml:lang="fr">Type d'encodage. Deux valeurs possibles :
+					"compression" (compression) ou "encryption" (cryptage).</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="encryption"/>
+					<xs:enumeration value="compression"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="method" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Encryption or compression method.</xs:documentation>
+				<xs:documentation xml:lang="fr">Méthode de cryptage ou de
+					compression.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="order" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Order in which the encoding should be
+					applied.</xs:documentation>
+				<xs:documentation xml:lang="fr">Ordre de traitement de l'encodage</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:positiveInteger"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="originalSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Size of the entry before
+					compression.</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille de l'entrée avant
+					compression.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:element name="fileName" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Name of the ARC file as expressed in the
+				version-block.</xs:documentation>
+			<xs:documentation xml:lang="fr">Nom du fichier ARC tel qu’indiqué dans le
+				version-block.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ipAddress" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">IP Address of the crawler.</xs:documentation>
+			<xs:documentation xml:lang="fr">Adresse IP du robot de collecte.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="creationDateTime" type="xs:dateTime">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Initialization date for the ARC file.</xs:documentation>
+			<xs:documentation xml:lang="fr">Date d’initialisation du fichier ARC.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="profile" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Particular profile of the version-block, recorded here
+				as "version declaration + value of the "reserved" field in the version-block. For
+				the moment, only "1.1" exists. If there is no specific profile, this field should
+				not be recorded.</xs:documentation>
+			<xs:documentation xml:lang="fr">Profil spécifique du version-block consignée ici sous la
+				forme "déclaration de version + présence de 1 dans le champ "reserved" du
+				version-block. Actuellement seul « 1.1 » existe. En l’absence de profil spécifique,
+				ne pas renseigner ce champ.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="originCode" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Origin code for the ARC file.</xs:documentation>
+			<xs:documentation xml:lang="fr">Code de l'origine du fichier ARC.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="toBeDefinedComplexType">
+		<xs:sequence>
+			<xs:any namespace="##any" processContents="lax" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="other">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any namespace="##any" processContents="lax" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="fixity">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Fixity information on a particular
+				object.</xs:documentation>
+			<xs:documentation xml:lang="fr">Information d'intégrité sur un objet
+				particulier.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="messageDigest" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Value of the message digest of the
+						object</xs:documentation>
+					<xs:documentation xml:lang="fr">Valeur de l'empreinte numérique de
+						l'objet.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="messageDigestAlgorithm" type="CHECKSUMTYPEDefinition" use="optional">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Algorithm used to calculate the message digest
+						of the object</xs:documentation>
+					<xs:documentation xml:lang="fr">Algorithme utilisé pour calculer l'empreinte
+						numérique de l'objet.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="size" type="xs:nonNegativeInteger" use="optional">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Size of the object in bytes.</xs:documentation>
+					<xs:documentation xml:lang="fr">Taille de l'objet en octets.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="permission">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Particular permission on the entry, given to one or many
+				agents or groups.</xs:documentation>
+			<xs:documentation xml:lang="fr">Permission particulière sur cette entrée accordée à un
+				ou plusieurs agents ou groupes.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="mode" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Permission on an entry in base
+							8.</xs:documentation>
+						<xs:documentation xml:lang="fr">Permission sur cette entrée, exprimée en
+							octal.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="owner" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Owner agent for this
+							entry.</xs:documentation>
+						<xs:documentation xml:lang="fr">Agent propriétaire de cette
+							entrée.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="group" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Owner group for this
+							entry.</xs:documentation>
+						<xs:documentation xml:lang="fr">Groupe propriétaire de cette
+							entrée.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="entryExtensionComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Information fields specific to a particular entry
+				type.</xs:documentation>
+			<xs:documentation xml:lang="fr">Informations spécifiques à un type d'entrée
+				donné.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element ref="ARCEntry"/>
+			<xs:element ref="ZIPEntry"/>
+			<xs:element ref="TAREntry"/>
+			<xs:element ref="WARCEntry"/>
+		</xs:choice>
+		<xs:attribute name="ID" type="xs:ID" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">ID assigned to a particular
+					entryExtensionSection.</xs:documentation>
+				<xs:documentation xml:lang="fr">Identifiant assigné à une section entryExtension
+					particulière.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="ARCEntryComplexType">
+		<xs:sequence>
+			<xs:element ref="declaredMimeType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Particular declared MIME
+						type.</xs:documentation>
+					<xs:documentation xml:lang="fr">Type MIME particulier
+						déclaré.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="host" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Host corresponding to this particular ARC
+						record.</xs:documentation>
+					<xs:documentation xml:lang="fr">Hôte correpondant à cet ARC record
+						particulier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="response" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Particular response of a harvested site's server
+						to the harvesting tool. Its nature depends on the protocol involved. For
+						example in case it is an HTTP protocol, the value of response will be an
+						HTTP status code.</xs:documentation>
+					<xs:documentation xml:lang="fr">Réponse particulière du serveur d'un site
+						collecté à l'outil de collecte. La nature de cette réponse dépend du
+						protocol utilisé. Par exemple, dans le cas d'un protocole HTTP, response
+						aura pour valeur un code HTTP.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="CHECKSUMTYPEDefinition">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Adler-32"/>
+			<xs:enumeration value="CRC32"/>
+			<xs:enumeration value="HAVAL"/>
+			<xs:enumeration value="MD5"/>
+			<xs:enumeration value="MNP"/>
+			<xs:enumeration value="SHA-1"/>
+			<xs:enumeration value="SHA-256"/>
+			<xs:enumeration value="SHA-384"/>
+			<xs:enumeration value="SHA-512"/>
+			<xs:enumeration value="TIGER"/>
+			<xs:enumeration value="WHIRLPOOL"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Proposed addition per Harvard/AVPreserve -->
+	<xs:element name="diskImageType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Indication of whether the disk image is a bit-for-bit
+				copy (physical) or only copies the contents of the directories on a disk
+				(logical)</xs:documentation>
+			<xs:documentation xml:lang="fr">Mention du type d'image disque : il s'agit soit d'une
+				copie bit pour bit (physique) ou d'une copie de l'arborescence d'un disque
+				(logique).</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="physical"/>
+				<xs:enumeration value="logical"/>
+				<xs:enumeration value="unspecified"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<!-- Proposed addition per Harvard/AVPreserve -->
+	<xs:element name="fileSystemType" type="stringPlusUriComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The data structure used to represent files on a disk or
+				partition.</xs:documentation>
+			<xs:documentation xml:lang="fr">Organisation des données utilisée pour représenter des
+				fichiers sur un disque ou une partition de disque..</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- Proposed addition per Harvard/AVPreserve -->
+	<xs:element name="sourceMediaType" type="stringPlusUriComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Type of physical carrier from which the disk image was
+				captured.</xs:documentation>
+			<xs:documentation xml:lang="fr">Type du support physique à partir duquel l'image disque
+				a été produite.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- Proposed addition per Harvard/AVPreserve -->
+	<xs:element name="sourceMediaManufacturer" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Name of the organization or individual responsible for
+				the production of the media.</xs:documentation>
+			<xs:documentation xml:lang="fr">Nom de l'organisation ou de l'individu producteur du
+				support d'origine.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- Proposed addition per Harvard/AVPreserve -->
+	<xs:element name="sourceMediaModel" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Name of the model of the media.</xs:documentation>
+			<xs:documentation xml:lang="fr">Nom du modèle du support d'origine.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!--
+                             *********************************************************************************************
+                             *********************************************************************************************
+                             *                                                                                                                  *
+                             *                                          <mdSec> element                                             *
+                             *                                                                                                                  *
+                             *                                                                                                                  *
+                             *********************************************************************************************
+                            *********************************************************************************************                        
+-->
+	<xs:element name="mdSec" type="mdSecDefinition"/>
+	<!--
+
+************ mdSecDefinition
+
+<mdSec> is a generalization of several METS metadata type elements: <dmdSec>, <amdSec>, etc. all of METS 
+type "mdSecType".  PREMIS generalized these into a single element because it does not distinguish between 
+these different types of metadata (e.g. administrative vs. descriptive). 
+ 
+<mdSec>  includes one or both of <mdRef> and <mdWrap>, a reference to external metadata and a wrapper of 
+internal metadata, respectively. <mdRef> is an empty element with a link (an attribute) to external metadata.  
+<mdWrap> includes the metadata, either as <xmlData> or <binData>.
+
+-->
+	<xs:complexType name="mdSecDefinition">
+		<xs:all>
+			<xs:element ref="mdRef" minOccurs="0"/>
+			<xs:element ref="mdWrap" minOccurs="0"/>
+		</xs:all>
+		<xs:attribute name="ID" type="xs:ID" use="required"/>
+		<xs:attribute name="GROUPID" type="xs:string"/>
+		<xs:attribute name="ADMID" type="xs:IDREFS"/>
+		<xs:attribute name="CREATED" type="xs:dateTime"/>
+		<xs:attribute name="STATUS" type="xs:string"/>
+	</xs:complexType>
+	<!--
+
+************ mdRefDefinition
+<mdRef> (metadata reference)  is an empty element providing pointers (via xlink and XPTR attributes) to metadata outside the PREMIS document.  
+-->
+	<xs:complexType name="mdRefDefinition">
+		<xs:attribute name="ID" type="xs:ID"/>
+		<xs:attribute name="LOCTYPE" type="LOCTYPEDefinition" use="required"/>
+		<xs:attribute name="OTHERLOCTYPE" type="xs:string"/>
+		<xs:attributeGroup ref="xlink:simpleLink"/>
+		<xs:attributeGroup ref="metadataAttributeGroup"/>
+		<xs:attribute name="LABEL" type="xs:string"/>
+		<xs:attribute name="XPTR" type="xs:string"/>
+		<!-- -->
+		<!-- <LOCTYPE> must be supplied, and its value may be "other" in which case <OTHERLOCTYPE> should be supplied.-->
+	</xs:complexType>
+	<!-- Element Declarations -->
+	<xs:element name="binData" type="xs:base64Binary"/>
+	<xs:element name="mdRef" type="mdRefDefinition"/>
+	<xs:element name="mdWrap" type="mdWrapDefinition"/>
+	<xs:element name="xmlData" type="xmlDataDefinition"/>
+	<!-- 
+********* mdWrapDefinition
+-->
+	<xs:complexType name="mdWrapDefinition">
+		<xs:choice minOccurs="0">
+			<xs:element ref="binData"/>
+			<xs:element ref="xmlData"/>
+		</xs:choice>
+		<xs:attribute name="ID" type="xs:ID"/>
+		<xs:attributeGroup ref="metadataAttributeGroup"/>
+		<xs:attribute name="LABEL" type="xs:string"/>
+		<!--
+						<mdWrap> (metadata wrapper) wraps metadata in one of the following forms: 
+1) XML-encoded (belonging to any namespace) wrapped in an <xmlData>  element. . 
+2) Arbitrary Base64 encoded  wrapped in a <binData>  element. 
+-->
+	</xs:complexType>
+	<!-- xmlDataDefinition -->
+	<xs:complexType name="xmlDataDefinition">
+		<xs:sequence>
+			<xs:any namespace="##any" processContents="lax" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- MDTYPEDefinition -->
+	<xs:simpleType name="MDTYPEDefinition">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MIX"/>
+			<xs:enumeration value="LC-VIDEO"/>
+			<xs:enumeration value="LC-AUDIO"/>
+			<xs:enumeration value="TEXTMD"/>
+			<xs:enumeration value="METSRIGHTS"/>
+			<xs:enumeration value="CDLCopyright"/>
+			<xs:enumeration value="XMLSignature"/>
+			<xs:enumeration value="OTHER"/>
+		</xs:restriction>
+		<!-- this list of values differs from the list in METS -->
+	</xs:simpleType>
+	<!-- LOCTYPEDefinition -->
+	<xs:simpleType name="LOCTYPEDefinition">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ARK"/>
+			<xs:enumeration value="URN"/>
+			<xs:enumeration value="URL"/>
+			<xs:enumeration value="PURL"/>
+			<xs:enumeration value="HANDLE"/>
+			<xs:enumeration value="DOI"/>
+			<xs:enumeration value="OTHER"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- *************** attribute group definitions -->
+	<!-- **** metadataAttributeGroup -->
+	<xs:attributeGroup name="metadataAttributeGroup">
+		<xs:attribute name="MDTYPE" type="MDTYPEDefinition" use="required"/>
+		<xs:attribute name="OTHERMDTYPE" type="xs:string"/>
+		<xs:attribute name="MDTYPEVERSION" type="xs:string"/>
+	</xs:attributeGroup>
+	<!-- Element in complex type -->
+	<xs:element name="container" type="containerComplexType"/>
+	<xs:element name="entries" type="entriesComplexType"/>
+	<xs:element name="formatDesignation" type="formatDesignationComplexType"/>
+	<xs:element name="creatingEnvironment" type="creatingEnvironmentComplexType"/>
+	<xs:element name="containerExtension" type="containerExtensionComplexType"/>
+	<xs:element name="creatingSoftware" type="creatingSoftwareComplexType"/>
+	<xs:element name="ARCContainer" type="ARCContainerComplexType"/>
+	<xs:element name="ZIPContainer" type="toBeDefinedComplexType"/>
+	<xs:element name="TARContainer" type="toBeDefinedComplexType"/>
+	<!-- élement supprimé en version 1.1
+	<xs:element name="WARCContainer" type="toBeDefinedComplexType"/>
+	-->
+	<!-- Proposed addition per AVPreseve/Harvard -->
+	<xs:element name="diskImageContainer" type="diskImageContainerComplexType"/>
+	<xs:element name="entriesInformation" type="entriesInformationComplexType"/>
+	<xs:element name="entry" type="entryComplexType"/>
+	<xs:element name="encodings" type="encodingsComplexType"/>
+	<xs:element name="encoding" type="encodingComplexType"/>
+	<xs:element name="fileSystem" type="fileSystemComplexType"/>
+	<xs:element name="formats" type="formatsComplexType"/>
+	<xs:element name="format" type="formatComplexType"/>
+	<xs:element name="entriesExtension" type="entriesExtensionComplexType"/>
+	<xs:element name="ARCEntries" type="ARCEntriesComplexType"/>
+	<xs:element name="ZIPEntries" type="toBeDefinedComplexType"/>
+	<xs:element name="TAREntries" type="toBeDefinedComplexType"/>
+	<!-- définition du type de WARCEntries en version 1.1 -->
+	<xs:element name="WARCEntries" type="WARCEntriesComplexType"/>
+	<xs:element name="declaredMimeTypes" type="declaredMimeTypesComplexType"/>
+	<xs:element name="declaredMimeType" type="declaredMimeTypeComplexType"/>
+	<xs:element name="hosts" type="hostsComplexType"/>
+	<xs:element name="host" type="hostComplexType"/>
+	<xs:element name="responses" type="responsesComplexType"/>
+	<xs:element name="response" type="responseComplexType"/>
+	<xs:element name="entryExtension" type="entryExtensionComplexType"/>
+	<xs:element name="ARCEntry" type="ARCEntryComplexType"/>
+	<xs:element name="ZIPEntry" type="toBeDefinedComplexType"/>
+	<xs:element name="TAREntry" type="toBeDefinedComplexType"/>
+	<!-- définition du type de WARCEntry en version 1.1 modification du 20140925 -->
+	<xs:element name="WARCEntry" type="WARCEntryComplexType"/>
+	<xs:element name="assessmentInformation" type="assessmentInformationComplexType"/>
+	<xs:element name="outcome" type="xs:string"/>
+	<xs:element name="outcomeDetailNote" type="xs:string"/>
+	<xs:element name="versionBlockPayload" type="xs:boolean"/>
+	<!-- additions pour passage à la version 1.1 -->
+	<!-- Definitions of complex types -->
+	<xs:complexType name="WARCEntriesComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">This element contains, for each record type (WARC-Type)
+				in the WARC file, a child element which aggregates informations on all records of
+				this type. There are 8 record types: warcinfo, response, resource, request,
+				metadata, revisit, conversion, continuation. The latter two are not described in the
+				current version of the schema.</xs:documentation>
+			<xs:documentation xml:lang="fr">Cet élément comprend, pour chaque type de record
+				(WARC-Type) présent dans le fichier WARC, un élément fils qui agrège les
+				informations sur tous les records de ce type. Il y a 8 types de records : warcinfo,
+				response, resource, request, metadata, revisit, conversion, continuation. Les deux
+				derniers types ne sont pas décrits dans cette version du schéma.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="warcInfoRecords"/>
+			<xs:element ref="responseRecords" minOccurs="0"/>
+			<xs:element ref="resourceRecords" minOccurs="0"/>
+			<xs:element ref="requestRecords" minOccurs="0"/>
+			<xs:element ref="metadataRecords" minOccurs="0"/>
+			<xs:element ref="revisitRecords" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="WARCEntryComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">In the case of a verbose description of a WARC file, this element contains for each record a child element corresponding to its WARC-type.</xs:documentation>
+			<xs:documentation xml:lang="fr">Dans le cas où un fichier WARC est décrit de manière verbeuse, cet élément contient un élément fils correspondant à son WARC-type pour chaque record..</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="warcInfoRecord"/>
+			<xs:element ref="responseRecord" minOccurs="0"/>
+			<xs:element ref="resourceRecord" minOccurs="0"/>
+			<xs:element ref="requestRecord" minOccurs="0"/>
+			<xs:element ref="metadataRecord" minOccurs="0"/>
+			<xs:element ref="revisitRecord" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="WARCRecordsType" abstract="true">
+		<xs:sequence>
+			<xs:element ref="blockFormats" minOccurs="0"/>
+			<xs:element ref="payloadFormats" minOccurs="0"/>
+			<xs:element ref="identifiedPayloadTypes" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="aggregatedInformationAttributeGroup"/>
+	</xs:complexType>
+	<xs:complexType name="WARCRecordType" abstract="true">
+		<xs:sequence>
+			<xs:element ref="blockFormat" minOccurs="0"/>
+			<xs:element ref="payloadFormat" minOccurs="0"/>
+			<xs:element ref="identifiedPayloadType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="aggregatedInformationAttributeGroup"/>
+	</xs:complexType>
+	<xs:complexType name="warcInfoRecordsComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordsType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="warcInfoRecordComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="responseRecordsComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The globalSize attribute of this element applies to the
+				payload Content-Length expressed in the content block</xs:documentation>
+			<xs:documentation xml:lang="fr">L'attribut globalSize de cet élément s’applique au
+				Content-Length du payload exprimé dans le content block</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="WARCRecordsType">
+				<xs:sequence>
+					<xs:element ref="declaredMimeTypes" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element corresponds to the Content-Type declared in
+								the payload (http/https header).</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément correspond au Content-Type declaré dans
+								le payload (en-tête http/https).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element ref="hosts" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element contains the list of the collected hosts for a series of response WARC records. Information is taken from the WARC-Target-URI named field.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément contient la liste des hôtes collectés pour une série de records WARC de type response. L’information est issue du champ WARC-Target-URI.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element ref="responses" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element contains the list of response codes and corresponds to the first string after the first space located at the first line of the WARC content block.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément contient la liste des codes de réponse et correspond à la première chaîne de caractères après la première espace située à la première ligne du content block WARC.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="responseRecordComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordType">
+				<xs:sequence>
+					<xs:element ref="declaredMimeType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element corresponds to the Content-Type declared in
+								the payload (http/https header).</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément correspond au Content-Type declaré dans
+								le payload (en-tête http/https).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element ref="host" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element indicates the collected host for a response WARC record. Information is taken from the WARC-Target-URI named field.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément indique l'hôte collecté pour un record WARC de type response. L’information est issue du champ WARC-Target-URI.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element ref="response" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element indicates the response code and corresponds to the first string after the first space located at the first line of the WARC content block.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément indique le code de réponse et correspond à la première chaîne de caractères après la première espace située à la première ligne du content block WARC.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="resourceRecordsComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordsType">
+				<xs:sequence>
+					<xs:element ref="hosts" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element contains the list of the collected hosts for a series of resource WARC records. Information is taken from the WARC-Target-URI named field.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément contient la liste des hôtes collectés pour une série de records WARC de type resource. L’information est issue du champ WARC-Target-URI.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element ref="responses" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element contains the list of response codes and corresponds to the first string after the first space located at the first line of the WARC content block.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément contient la liste des codes de réponse et correspond à la première chaîne de caractères après la première espace située à la première ligne du content block WARC.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="resourceRecordComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordType">
+				<xs:sequence>
+					<xs:element ref="host" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element indicates the collected host for a resource WARC record. Information is taken from the WARC-Target-URI named field.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément indique l'hôte collecté pour un record WARC de type resource. L’information est issue du champ WARC-Target-URI.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element ref="response" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element indicates the response code and corresponds to the first string after the first space located at the first line of the WARC content block.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément indique le code de réponse et correspond à la première chaîne de caractères après la première espace située à la première ligne du content block WARC.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="requestRecordsComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordsType">
+				<xs:sequence>
+					<xs:element ref="userAgents" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element contains the list of user-agents mentioned in an HTTP request and corresponds to the content of the WARC field User-Agent until the first space excluded.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément contient la liste des user-agent mentionnés dans une requête HTTP et correspond au contenu du champ WARC User-Agent jusqu'à la première espace exclue.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="requestRecordComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordType">
+				<xs:sequence>
+					<xs:element ref="userAgent" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element indicates the user-agent mentioned in an HTTP request and corresponds to the content of the WARC field User-Agent until the first space excluded.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément indique le user-agent mentionné dans une requête HTTP et correspond au contenu du champ WARC User-Agent jusqu'à la première espace exclue.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="metadataRecordsComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordsType">
+				<xs:sequence>
+					<xs:element ref="concurrentToRelationships" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element contains the list of concurrent-to relationships mentioned in the WARC content block. If several concurrent-to relationships are mentioned in a WARC record, only the first is recorded.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément contient la liste des relations concurrent-to mentionnées dans les records WARC. Si plusieurs relations concurrent-to sont mentionnées dans un record WAR, seule la première est enregistrée.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element ref="refersToRelationships" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element contains the list of refers-to relationships mentioned in the WARC content block.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément contient la liste des relations refers-to mentionnées dans les records WARC.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="metadataRecordComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordType">
+				<xs:sequence>
+					<xs:element ref="concurrentToRelationship" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element indicates the concurrent-to relationship mentioned in the WARC content block. If several concurrent-to relationships are mentioned in a WARC record, only the first is recorded.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément indique la relation concurrent-to mentionnée dans les records WARC. Si plusieurs relations concurrent-to sont mentionnées dans un record WAR, seule la première est enregistrée.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element ref="refersToRelationship" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element indicates the refers-to relationship mentioned in the WARC content block.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément indique la relation refers-to mentionnée dans les records WARC.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="revisitRecordsComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordsType">
+				<xs:sequence>
+					<xs:element ref="warcProfiles" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element contains the list of profiles mentioned in the WARC-Profile named field of revisit WARC records.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément contient la liste des profiles mentionnés dans le champ WARC-Profile des records WARC de type revisit.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="revisitRecordComplexType">
+		<xs:complexContent>
+			<xs:extension base="WARCRecordType">
+				<xs:sequence>
+					<xs:element ref="warcProfile" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">This element indicates the profile mentioned in the WARC-Profile named field of a revisit WARC record.</xs:documentation>
+							<xs:documentation xml:lang="fr">Cet élément indique le profile mentionné dans le champ WARC-Profile d'un record WARC de type revisit.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="blockFormatsComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">This element contains the list of values of Content-Type from
+				the record header.</xs:documentation>
+			<xs:documentation xml:lang="fr">Cet élément contient la liste des valeurs du Content-Type du
+				header du record.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="blockFormat" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">This element contains the value of Content-Type from
+						the record header.</xs:documentation>
+					<xs:documentation xml:lang="fr">Cet élément contient la valeur du Content-Type du
+						header du record.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="concurrentToRelationshipsComplexType">
+		<xs:sequence>
+			<xs:element ref="concurrentToRelationship" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="identifiedPayloadTypesComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Information containing the value of Content-Type from a
+				previous identification. This value is extracted from the field:
+				Identified-Payload-Type.</xs:documentation>
+			<xs:documentation xml:lang="fr">Information qui comprend la valeur du Content-Type
+				provenant d’une identification antérieure, extraite du champ
+				Identified-Payload-Type.</xs:documentation>
+			<xs:documentation xml:lang="fr">L’élément formats aura préséance sur le champ
+				WARC-Identified-Payload-Type, s’il existe.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="identifiedPayloadType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="payloadFormatsComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Information containing the value computed by the
+				identification tool about the content-block.</xs:documentation>
+			<xs:documentation xml:lang="fr">Information qui comprend comprend la valeur calculée par
+				l’outil d’identification sur le content-block. Dans le cas du type Response, on
+				utilise le payload pour les réponses http/https.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="payloadFormat" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="refersToRelationshipsComplexType">
+		<xs:sequence>
+			<xs:element ref="refersToRelationship" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="userAgentsComplexType">
+		<xs:sequence>
+			<xs:element ref="userAgent" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="warcProfilesComplexType">
+		<xs:sequence>
+			<xs:element ref="warcProfile" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="blockFormatComplexType" mixed="true">
+		<xs:attributeGroup ref="aggregatedInformationAttributeGroup"/>
+	</xs:complexType>
+	<xs:complexType name="concurrentToRelationshipComplexType" mixed="true">
+		<xs:attributeGroup ref="aggregatedInformationAttributeGroup"/>
+	</xs:complexType>
+	<xs:complexType name="identifiedPayloadTypeComplexType" mixed="true">
+		<xs:attributeGroup ref="aggregatedInformationAttributeGroup"/>
+	</xs:complexType>
+	<xs:complexType name="payloadFormatComplexType" mixed="true">
+		<xs:attributeGroup ref="aggregatedInformationAttributeGroup"/>
+	</xs:complexType>
+	<xs:complexType name="refersToRelationshipComplexType" mixed="true">
+		<xs:attributeGroup ref="aggregatedInformationAttributeGroup"/>
+	</xs:complexType>
+	<xs:complexType name="userAgentComplexType" mixed="true">
+		<xs:attributeGroup ref="aggregatedInformationAttributeGroup"/>
+	</xs:complexType>
+	<xs:complexType name="warcProfileComplexType" mixed="true">
+		<xs:attributeGroup ref="aggregatedInformationAttributeGroup"/>
+	</xs:complexType>
+	<!-- Proposed addition per Harvard/AVPreserve -->
+	<xs:complexType name="diskImageContainerComplexType">
+		<xs:sequence>
+			<xs:element ref="diskImageType" minOccurs="1" maxOccurs="1"/>
+			<xs:element ref="sourceMedia" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="fileSystems" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Proposed addition per Harvard/AVPreserve -->
+	<xs:complexType name="sourceMediaComplexType">
+		<xs:sequence>
+			<!-- sourceMediaType made repeatable for now to accommodate different forms of name for source media, particularly given variant practices in recording (or not recording) dimensions, e.g., "floppy disk" vs. "3.5-inch floppy disk" -->
+			<xs:element ref="sourceMediaType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="sourceMediaManufacturer" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="sourceMediaModel" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="serialNumber" type="xs:string">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Serial number of the media.</xs:documentation>
+				<xs:documentation xml:lang="fr">Numéro de série du support.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="storageCapacity" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Storage capacity of the media expressed as a
+					non-negative integer representing the number of bytes, expressed in base
+					10.</xs:documentation>
+				<xs:documentation xml:lang="fr">Capacité de stockage du support exprimé par un entier non négatif en octets en base 10.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- Proposed addition per Harvard/AVPreserve.-->
+	<xs:complexType name="fileSystemsComplexType">
+		<xs:sequence>
+			<xs:element ref="fileSystem" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Attribute groups -->
+	<xs:attributeGroup name="aggregatedInformationAttributeGroup">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The attributes are identical to these of
+				entriesInformationComplexType.</xs:documentation>
+			<xs:documentation xml:lang="fr">Attributs identiques à ceux de
+				entriesInformationComplexType.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="number" type="xs:nonNegativeInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Number of records.</xs:documentation>
+				<xs:documentation xml:lang="fr">Nombre de records.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="minimumSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Minimum size of the block (based on the record Content-Length).</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille minimum du block (basé sur Content-Length du
+					record).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="maximumSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Maximum size of the block (based on the record Content-Length).</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille maximum du block (basé sur Content-Length du
+					record).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="firstDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Date of the oldest record (based on the record WARC-Date).</xs:documentation>
+				<xs:documentation xml:lang="fr">Date du record le plus ancien (basé sur WARC-Date du
+					record).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="lastDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Date of the most recent record (based on the record WARC-Date).</xs:documentation>
+				<xs:documentation xml:lang="fr">Date du record le plus récent (basé sur WARC-Date du
+					record).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="globalSize" type="xs:nonNegativeInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Total size of the blocks (sum of the record Content-Length).</xs:documentation>
+				<xs:documentation xml:lang="fr">Taille totale des blocks (somme des Content-Length
+					du record).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+	<!-- Simple type elements -->
+	<xs:element name="originalName" type="xs:string"/>
+	<!-- Element in complex type -->
+	<xs:element name="metadataRecords" type="metadataRecordsComplexType"/>
+	<xs:element name="requestRecords" type="requestRecordsComplexType"/>
+	<xs:element name="resourceRecords" type="resourceRecordsComplexType"/>
+	<xs:element name="responseRecords" type="responseRecordsComplexType"/>
+	<xs:element name="revisitRecords" type="revisitRecordsComplexType"/>
+	<xs:element name="warcInfoRecords" type="warcInfoRecordsComplexType"/>
+	<xs:element name="metadataRecord" type="metadataRecordComplexType"/>
+	<xs:element name="requestRecord" type="requestRecordComplexType"/>
+	<xs:element name="resourceRecord" type="resourceRecordComplexType"/>
+	<xs:element name="responseRecord" type="responseRecordComplexType"/>
+	<xs:element name="revisitRecord" type="revisitRecordComplexType"/>
+	<xs:element name="warcInfoRecord" type="warcInfoRecordComplexType"/>
+	<xs:element name="blockFormats" type="blockFormatsComplexType"/>
+	<xs:element name="concurrentToRelationships" type="concurrentToRelationshipsComplexType"/>
+	<xs:element name="identifiedPayloadTypes" type="identifiedPayloadTypesComplexType"/>
+	<xs:element name="payloadFormats" type="payloadFormatsComplexType"/>
+	<xs:element name="refersToRelationships" type="refersToRelationshipsComplexType"/>
+	<xs:element name="userAgents" type="userAgentsComplexType"/>
+	<xs:element name="warcProfiles" type="warcProfilesComplexType"/>
+	<xs:element name="blockFormat" type="blockFormatComplexType"/>
+	<xs:element name="concurrentToRelationship" type="concurrentToRelationshipComplexType"/>
+	<xs:element name="identifiedPayloadType" type="identifiedPayloadTypeComplexType"/>
+	<xs:element name="payloadFormat" type="payloadFormatComplexType"/>
+	<xs:element name="refersToRelationship" type="refersToRelationshipComplexType"/>
+	<xs:element name="userAgent" type="userAgentComplexType"/>
+	<xs:element name="warcProfile" type="warcProfileComplexType"/>
+	<!-- Proposed addition per Harvard/AVPreserve -->
+	<xs:element name="sourceMedia" type="sourceMediaComplexType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Type of physical medium containing digitally encoded
+				data</xs:documentation>
+			<xs:documentation xml:lang="fr">Type du support physique à partir duquel est produite
+				une image disque</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fileSystems" type="fileSystemsComplexType"/>
+</xs:schema>

@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+TIKA_HOME="/opt/tika"
+TIKA_JAR="${TIKA_HOME}/tika-app-4.2.0.jar"
+INPUT_ROOT="/mnt/input"
+
+usage() {
+    echo "Usage : tika-analyze <repertoire-relatif-a-input>" >&2
+    echo "Exemple : tika-analyze lot-001/documents" >&2
+}
+
+if [[ $# -ne 1 ]]; then
+    usage
+    exit 2
+fi
+
+# Une session doit avoir été initialisée au préalable.
+if [[ -z "${REPORT_DIR:-}" || ! -d "$REPORT_DIR" ]]; then
+    echo "ERREUR : initialiser d'abord une session avec :" >&2
+    echo "  source /usr/local/bin/start-session" >&2
+    exit 1
+fi
+
+if [[ ! -d "$INPUT_ROOT" ]]; then
+    echo "ERREUR : $INPUT_ROOT est inaccessible." >&2
+    exit 1
+fi
+
+if [[ ! -f "$TIKA_JAR" ]]; then
+    echo "ERREUR : JAR Tika introuvable : $TIKA_JAR" >&2
+    exit 1
+fi
+
+
+RELATIVE_DIR="$1"
+
+if [[ "$RELATIVE_DIR" == "." ]]; then
+    # Analyser l'intégralité du corpus.
+    INPUT_DIR="$(realpath -e -- "$INPUT_ROOT")"
+    OUTPUT_DIR="$REPORT_DIR/tika"
+else
+    # Refuser les chemins absolus et les traversées de répertoire.
+    if [[ "$RELATIVE_DIR" = /* ||
+          "$RELATIVE_DIR" == ".." ||
+          "$RELATIVE_DIR" == ../* ||
+          "$RELATIVE_DIR" == */../* ||
+          "$RELATIVE_DIR" == */.. ]]; then
+        echo "ERREUR : fournir un chemin relatif à /mnt/input, sans '..'." >&2
+        exit 2
+    fi
+
+    INPUT_DIR="$(realpath -e -- "$INPUT_ROOT/$RELATIVE_DIR")" || {
+        echo "ERREUR : répertoire source introuvable." >&2
+        exit 1
+    }
+
+    # Vérifier que le chemin résolu reste dans /mnt/data.
+    case "$INPUT_DIR" in
+        "$INPUT_ROOT"/*) ;;
+        *)
+            echo "ERREUR : le chemin sort de /mnt/data." >&2
+            exit 2
+            ;;
+    esac
+
+    OUTPUT_DIR="$REPORT_DIR/tika/$RELATIVE_DIR"
+fi
+
+if [[ ! -d "$INPUT_DIR" ]]; then
+    echo "ERREUR : la source n'est pas un répertoire." >&2
+    exit 1
+fi
+
+# Recréer la même arborescence relative dans les rapports.
+LOG_DIR="$REPORT_DIR/logs"
+LOG_FILE="$LOG_DIR/tika-$(date -u +%Y%m%dT%H%M%SZ).log"
+
+mkdir -p "$OUTPUT_DIR" "$LOG_DIR"
+
+echo "Session  : ${SESSION_ID:-inconnue}"
+echo "Source   : $INPUT_DIR"
+echo "Résultats: $OUTPUT_DIR"
+echo "Journal  : $LOG_FILE"
+
+# Tika doit s'exécuter depuis son répertoire d'installation,
+# qui contient également les bibliothèques et plugins.
+cd "$TIKA_HOME"
+
+java -jar "$TIKA_JAR" \
+    -i "$INPUT_DIR" \
+    -o "$OUTPUT_DIR" \
+    2>&1 | tee "$LOG_FILE"
+
+echo "Analyse Tika terminée."

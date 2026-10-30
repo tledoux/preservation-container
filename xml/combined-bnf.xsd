@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema">
+    <import namespace="http://bibnum.bnf.fr/ns/spar_dc" schemaLocation="spar_dc.xsd"/>
+    <import namespace="http://www.loc.gov/METS/" schemaLocation="mets.xsd"/>
+    <import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+    <import namespace="info:lc/xmlns/premis-v2" schemaLocation="premis-v2-3.xsd"/>
+</schema>

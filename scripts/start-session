@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Ce script doit être chargé dans le shell courant :
+# source /usr/local/bin/start-session
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    echo "Utilisation : source start-session" >&2
+    exit 2
+fi
+
+# Vérifier la disponibilité des répertoires et des outils.
+if [[ ! -d /mnt/output ]]; then
+    echo "ERREUR : /mnt/output n'est pas accessible." >&2
+    return 1
+fi
+
+if ! command -v tool-versions >/dev/null 2>&1; then
+    echo "ERREUR : tool-versions est introuvable." >&2
+    return 1
+fi
+
+# Générer un identifiant UTC unique.
+SESSION_ID="$(date -u +%Y%m%dT%H%M%SZ)"
+REPORT_DIR="/mnt/output/$SESSION_ID"
+
+# Créer les répertoires de la session.
+if ! mkdir -p "$REPORT_DIR/logs"; then
+    echo "ERREUR : impossible de créer $REPORT_DIR" >&2
+    return 1
+fi
+
+# Exporter les variables dans le shell courant.
+export SESSION_ID REPORT_DIR
+
+# Enregistrer les versions des outils.
+if ! tool-versions "$REPORT_DIR/tool-versions.json"; then
+    echo "ERREUR : échec de l'inventaire des outils." >&2
+    return 1
+fi
+
+printf '\nSession initialisée avec succès.\n'
+printf 'SESSION_ID = %s\n' "$SESSION_ID"
+printf 'REPORT_DIR = %s\n\n' "$REPORT_DIR"
+
+# Afficher les fichiers créés.
+ls -lah "$REPORT_DIR"

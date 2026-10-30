@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Schéma XML pour le Dublin Core qualifié de SPAR.
+Auteur : Gautier Poupeau, Atos Origin
+Date de création : 10 avril 2008
+Dernière modification : 18 juin 2021
+Version : 2.7.3
+
+1.1 : modification Ajout pour traitement évolution refNum (modification paginationX)
+1.2 : Bernard Point : 22 octobre 2010. (SPAR v4.0 FIL_AUD)
+ - Ajout de la définition de productionIdentifier 
+ - Ajout des définitions boxOrder, commercialBarCode, tradeNumber, colorProfileIdentifier
+1.3 : Bernard Point : 24 mai 2011. (SPAR v5.0 FIL_DL_AUTO)
+ - Ajout des définitions de harvestDefinitionCode, harvestDivisionCode
+1.4 : Lei LI : 14 mai 2013 (SPAR v6.0 FIL_PROD_ADM)
+ - Ajout des définitions de documentCode et alert
+2.1 : Bertrand Caron, Sébastien Peyrard, Jean-Philippe Tramoni : 13 novembre 2015 (SPAR v7.0 FIL_ADDN)
+ - Intégration de la documentation en anglais et français sur les types (présente dans la v. 2), ajout de celle sur les types documentCode et alert, suppression des types colorProfileIdentifier et caption, ajout du type originalName 
+2.2 : Bertrand Caron, Jean-Philippe Tramoni : 1er mars 2016 (FIL_ADDN, FIL_DL_NEGO_LIVNUM)
+- Ajout de la définition de callNumber
+2.3 : Bertrand Caron, Jean-Philippe Tramoni : 23 mars 2016 (FIL_TA)
+- Restitution de la définition de boxCount, ajout de la documentation de boxOrder dans le cas des paquets de grande taille.
+2.4 : Bertrand Caron, 11 juillet 2017 (FIL_TA_SEDA)
+- Ajout des types originatingAgencySystemId, originatingAgencyArchiveUnitId et transferringAgencyArchiveUnitId.
+2.5 : Bertrand Caron, 18 mai 2018 (FIL_AUD_DLSD)
+- Ajout des types grid et isrc.
+2.6 : Bertrand Caron, 30 septembre 2019
+- Ajout des types boxIdentifier. (FIL_AUD_B)
+- Ajout du type represents (FIL_DL_AUTO_API)
+2.6.1 : Jordan de la Houssaye, 22 octobre 2019
+- Correction du type boxIdentifier (xs:string au lieu de xs:String). (FIL_AUD_B)
+
+2.7 : Bertrand Caron, 30 mars 2021
+- Ajout des types exploitationVisa, isan et eidr comme identifiants d'oeuvres audiovisuelles pour fil_ta_cnc.
+- Suppression de l'interdiction des attributs xml:lang sur plusieurs éléments.
+2.7.1 : Jordan de la Houssaye, 19 avril 2021
+- Correction du pattern pour ISAN. Les caractères de contrôles peuvent être des chiffres.
+2.7.2 : Jordan de la Houssaye, 20 avril 2021
+- Correction du pattern pour EIDR. Il ne fallait pas échapper le slash. Aussi, plus compact et rend compte de la contrainte de l'hexadécimal.
+2.7.3 : Bertrand Caron, 18 juin 2021
+- Correction du pattern pour exploitationVisa.
+
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://bibnum.bnf.fr/ns/spar_dc" xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://bibnum.bnf.fr/ns/spar_dc" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
+	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="http://dublincore.org/schemas/xmls/qdc/dc.xsd"/>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="http://dublincore.org/schemas/xmls/qdc/dcterms.xsd"/>
+	<xs:element name="spar_dc" type="dcterms:elementOrRefinementContainer">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">This XML schema declares additional refinements of Dublin Core elements. They are used within the SPAR preservation system.</xs:documentation>
+			<xs:documentation xml:lang="fr">Ce schéma XML déclare des raffinements additionnels d'éléments Dublin Core. Ils sont utilisés dans le système de préservation SPAR.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="ark">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is an ARK identifier</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core. Il s'agit ici d'un identifiant ARK.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:anyURI"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="isbn">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is an ISBN (International Standard Book Number).</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Ici il s'agit d'un ISBN (International Standard Book Number).</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="issn">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is an ISSN (International Standard Serial Number).</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Ici il s'agit d'un ISSN (International Standard Serial Number).</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="barCode">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is a barcode assigned by the library to the described object.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici d'un code à barres attribué par la bibliothèque à l'objet décrit.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- Code à barres commercial (v4.0 FIL_AUD) -->
+	<xs:complexType name="commercialBarCode">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is a retail barcode assigned by the publisher.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici d'un code à barres commercial attribué par l'éditeur.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="reproducedObjectCallNumber">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the call number of the physical object that has been used for the digitization.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de la cote de l'objet physique qui a servi à la numérisation.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="originalObjectCallNumber">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the call number of the original object initiating a chain of reproductions. For instance, when the microfilm of a physical document is digitized, the microfilm is the reproduced object while the analog document that was itself microfilmed is the original object.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de la cote de l'objet original étant à l'origine d'une série de reproductions. Par exemple, lorsqu'un microfilm d'un document physique est numérisé, le microfilm est l'objet reproduit tandis que le document analogique qui a lui-même été microfilmé est l'objet original.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- Numéro Commercial (v4.0 FIL_AUD) -->
+	<xs:complexType name="tradeNumber">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the trade number of the described object. This refinement is used for audiovisual publications.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Ici il s'agit du numéro commercial de l'objet décrit. Ce raffinement est utilisé pour décrire des publications audiovisuelles.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- harvestDivisionCode (v5.0 FIL_DL_AUTO) -->
+	<xs:complexType name="harvestDivisionCode">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the code of the harvest division the described object belongs to. The harvest division consists in a subdivision of a harvest definition, and its purpose is to group together a set of webpages or websites sharing common characteristics or that should be archived at the same moment. This refinement is used for web archives.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type d'identifiant donné en valeur de l'élément Dublin Core correspondant. Ici il s'agit du code de la division de collecte à laquelle appartient l'objet décrit. La division de collecte correspond à une subdivision d'un ensemble à collecter, et est destinée à regrouper des pages ou sites Web à collecter partageant des caractéristiques documentaires communes, ou devant être archivés au même moment. Ce raffinement est utilisé pour les archives du Web.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- harvestDefinitionCode : numéro de l'ensemble à collecter (v5.0 FIL_DL_AUTO) -->
+	<xs:complexType name="harvestDefinitionCode">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the code of the harvest definition the described object belongs to. A harvest definition groups together a set of webpages or websites that needs to be harvested at the same frequency, and that generally share similar characteristics from an editorial or from a content point of view. This refinement is used for web archives.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type d'identifiant donné en valeur de l'élément Dublin Core correspondant. Ici il s'agit de l’ensemble à collecter auquel appartient l'objet décrit. Un ensemble à collecter regroupe un ensemble de pages ou sites Web devant être collectés selon les mêmes fréquences, et qui partagent généralement des caractéristiques similaires en termes éditoriaux ou de contenu. Ce raffinement est utilisé pour les archives du Web.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="sequentialDesignation1">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">First type of sequential designation assigned to the described object. For instance, it can be the number of a particular volume inside a multivolume monograph, or the number of a CD inside a boxed set.</xs:documentation>
+			<xs:documentation xml:lang="fr">Premier type de volumaison attribuée à l'objet décrit. Par exemple, il peut s'agit du numéro d'un volume au sein d'une monographie en plusieurs volumes, ou le numéro d'un CD au sein d'un coffret.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="sequentialDesignation2">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Second type of sequential designation assigned to the described object. This is used in case there are several parallel sequential designations.</xs:documentation>
+			<xs:documentation xml:lang="fr">Second type de volumaison attribuée à l'objet décrit. Ce champ est utilisé dans le cas où il y a plusieurs volumaisons parallèles.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="sequentialDesignation3">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Third type of sequential designation assigned to the described object. This is used in case there are several parallel sequential designations.</xs:documentation>
+			<xs:documentation xml:lang="fr">Troisième type de volumaison attribuée à l'objet décrit. Ce champ est utilisé dans le cas où il y a plusieurs volumaisons parallèles.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- documentCode (FIL_PROD_ADM) -->
+	<xs:complexType name="documentCode">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is an internal identifier for administrative documents produced by BnF.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type d'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit de l'identifiant interne attribué aux documents administratifs produits par la BnF.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- alert (FIL_PROD_ADM) -->
+	<xs:complexType name="alert">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the date given as a value of the corresponding Dublin Core element. In this case, it is the date when the track manager will be notified that documents in the folder should be eliminated.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de date donnée en valeur de l'élément Dublin Core correspondant. Il s'agit de la date à laquelle le gestionnaire de la filière sera averti que des documents du dossier devraient être supprimés.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:date"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- pagination en chiffre arabe -->
+	<xs:complexType name="paginationA">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of page or leave numbering given as a value of the corresponding Dublin Core element. In this case, it is a page numbering in Arabic numerals.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de pagination ou foliotation donnée en valeur de l'élément Dublin Core correspondant. Il s'agit ici d'une pagination en chiffres arabes.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:integer"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- foliotation non contrôlée -->
+	<xs:complexType name="paginationF">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of page or leave numbering given as a value of the corresponding Dublin Core element. In this case, it is an uncontrolled leave numbering.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de pagination ou foliotation donnée en valeur de l'élément Dublin Core correspondant. Il s'agit ici d'une foliotation non contrôlée.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- pagination en chiffre romain -->
+	<xs:complexType name="paginationR">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of page or leave numbering given as a value of the corresponding Dublin Core element. In this case, it is a page numbering in Roman numerals.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de pagination ou foliotation donnée en valeur de l'élément Dublin Core correspondant. Il s'agit ici d'une pagination en chiffres romains.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:integer"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- autre pagination en chiffre arabe -->
+	<xs:complexType name="paginationX">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of page or leave numbering given as a value of the corresponding Dublin Core element. In this case, it is an uncontrolled page numbering.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de pagination ou foliotation donnée en valeur de l'élément Dublin Core correspondant. Il s'agit ici d'une pagination non contrôlée.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!--Elément "caption" supprimé (version 2.1)-->
+	<!-- Pour un identifiant de production (utilisé dans les dc:source v4.0 FIL_AUD) -->
+	<xs:complexType name="productionIdentifier">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the identifier of the described objet that was assigned by its Producer.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core. Il s'agit ici l'identifiant attribué par son Producteur à l'objet décrit.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Numéro de volume sur le nombre de volumes (v4.0 FIL_AUD) -->
+	<!-- Numéro d'AIP sur le nombre total d'AIP (FIL_TA) -->
+	<xs:complexType name="boxOrder">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">For audiovisual resources, volume rank on the total number of volumes (for instance 1 out of 3) within a single media carrier type.</xs:documentation>
+			<xs:documentation xml:lang="fr">Pour les ressources audiovisuelles, numéro de volume sur le nombre total de volumes (par ex. 1 sur 3) au sein d'un même type de support.</xs:documentation>
+			<xs:documentation xml:lang="en">In case of splitting a large SIP into several AIPs, AIP rank on the total number of splitted AIPs (for instance 1 out of 3).</xs:documentation>
+			<xs:documentation xml:lang="fr">Dans le cas de la division d'un SIP de grande taille, numéro de l'AIP sur le nombre total d'AIP générés (par ex. 1 sur 3).</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- Nombre total d'AIP (FIL_TA) -->
+	<xs:complexType name="boxCount">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">In case of splitting a large SIP into several AIPs, total number of splitted AIPs.</xs:documentation>
+			<xs:documentation xml:lang="fr">Dans le cas de la division d'un SIP de grande taille, nombre total d'AIP générés.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:integer"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Mire vidéo (v4.0 FIL_AUD)
+	Elément colorProfileIdentifier supprimé (version 2.1)-->
+	<xs:complexType name="list">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the content given as a value of the corresponding Dublin Core element. Here, it is a list. The xml:space attribute is allowed in the same element, so that one can preserve white spaces and/or new lines if needed (with xml:space="preserve").</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core. Il s'agit ici d'une liste. L'attribut xml:space est également autorisé pour le même élément, afin que l'on puisse au besoin conserver les espaces et/ou les retours à la ligne (avec xml:space="preserve").</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="dc:SimpleLiteral">
+				<xs:attribute ref="xml:space" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- 	Nom original du fichier (v7.0 FIL_ADDN) -->
+	<xs:complexType name="originalName">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the content given as a value of the corresponding Dublin Core element. Here, it is the original name of a file.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core. Ici, il s'agit du nom original d'un fichier.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Cote de l'objet (FIL_ADDN, FIL_DL_NEGO_LIVNUM) -->
+	<xs:complexType name="callNumber">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the call number of the described object.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de la cote de l'objet décrit.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Identifiant système donné par le service producteur (FIL_TA_SEDA) -->
+	<xs:complexType name="originatingAgencySystemId">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the identifier given by the records management system of the originating agency. It corresponds to the SEDA element OriginatingSystemId </xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de l'identifiant système donné par le SAE du service producteur. Il correspond à l'élément SEDA OriginatingSystemId.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Identifiant métier donné par le service producteur (FIL_TA_SEDA) -->
+	<xs:complexType name="originatingAgencyArchiveUnitId">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the identifier given by the originating agency to the archive unit. It corresponds to the SEDA element OriginatingAgencyArchiveUnitIdentifier</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de l'identifiant métier donné par le service producteur à l'unité d'archives. Il correspond à l'élément SEDA OriginatingAgencyArchiveUnitIdentifier.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Identifiant métier donné par le service d'archives (FIL_TA_SEDA) -->
+	<xs:complexType name="transferringAgencyArchiveUnitId">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the identifier given by the transferring agency to the archive unit. It corresponds to the SEDA element TransferringAgencyArchiveUnitIdentifier</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de l'identifiant métier donné par le service versant à l'unité d'archives. Il correspond à l'élément SEDA TransferringAgencyArchiveUnitIdentifier.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Identifiant ISRC (FIL_AUD_DLSD) -->
+	<xs:complexType name="isrc">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the ISRC (International Standard Recording Code) identifier.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de l'identifiant ISRC (International Standard Recording Code).</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Identifiant GRID (FIL_AUD_DLSD) -->
+	<xs:complexType name="grid">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the GRID (Global Release Identifier) identifier.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de l'identifiant GRID (Global Release Identifier).</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Identifiant de la "boîte" de l'Archive audiovisuelle-->
+	<xs:complexType name="boxIdentifier">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the "box" identifier inside the Audiovisual Archive.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de l'identifiant de la "boîte" dans l'Archive audiovisuelle.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Entité intellectuelle représentée (FIL_DL_AUTO_API) -->
+	<xs:complexType name="represents">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the relation given as a value of the corresponding Dublin Core element. In this case, it is the Intellectual entity represented by the package.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de la relation entretenue avec l'objet de l'élément. Il s'agit ici de l'entité intellectuelle représentée par le paquet, nommée par son URI.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Identifiant ISAN (FIL_TA_CNC) -->
+	<xs:complexType name="isan">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the ISAN (International Standard Audiovisual Number) identifier.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de l'identifiant ISAN (International Standard Audiovisual Number).</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="([A-F0-9]{4}\-){4}[A-Z0-9]\-([A-F0-9]{4}\-){2}[A-Z0-9]"/>
+					</xs:restriction>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Identifiant EIDR (FIL_TA_CNC) -->
+	<xs:complexType name="eidr">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the EIDR (Entertainment Identifier Registry) identifier.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici de l'identifiant EIDR (Entertainment Identifier Registry).</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:anyURI">
+						<!--<xs:pattern value="doi:10\.5240/.{4}-.{4}-.{4}-.{4}-.{4}-.{1}"/>-->
+						<xs:pattern value="doi:10\.5240/([0-9A-F]{4}-){5}[0-9A-Z]"/>
+					</xs:restriction>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- 	Numéro de visa d'exploitation (FIL_TA_CNC) -->
+	<xs:complexType name="exploitationVisa">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the type of the identifier given as a value of the corresponding Dublin Core element. In this case, it is the exploitation visa number assigned by CNC.</xs:documentation>
+			<xs:documentation xml:lang="fr">Précise le type de l'identifiant donné en valeur de l'élément Dublin Core correspondant. Il s'agit ici du numéro de visa d'exploitation attribué par le CNC.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="[0-9]{1,6}"/>
+					</xs:restriction>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>
