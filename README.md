@@ -12,19 +12,20 @@ L'image repose sur Debian et regroupe les utilitaires Unix classiques, les outil
 
 **Outils inclus**
 
-| Domaine                                | Outils principaux                        |
-|----------------------------------------|------------------------------------------|
-| Inspection et manipulation de fichiers | wc, od, stat, xxd, hexdump               |
-| Empreintes et intégrité                | md5sum, sha256sum, b3sum, openssl, rhash |
-| Identification                         | file, droid, siegfried                   |
-| Métadonnées                            | exiftool, tika, jhove, jpylyzer          |
-| Audiovisuel                            | mediainfo, ffprobe, ffmpeg               |
-| PDF                                    | verapdf, pdfbox                          |
-| JSON et XML                            | jq, xmllint, xmlstarlet                  |
-| Schémas XML                            | `/opt/xml-schemas`                       |
-| Archives                               | tar, gzip, bzip2, xz, zip, unzip, zstd   |
-| Empaquetage                            | bagit                                    |
-| Administration et scripts              | bash, python3, git, curl, wget, rsync    |
+| Domaine                                | Outils principaux                              |
+|----------------------------------------|------------------------------------------------|
+| Inspection et manipulation de fichiers | `wc, od, stat, xxd, hexdump, fq`               |
+| Empreintes et intégrité                | `md5sum` `sha256sum` `b3sum` `openssl` `rhash` |
+| Identification                         | `file, droid, siegfried`                       |
+| Métadonnées                            | `exiftool, tika, jhove, jpylyzer`              |
+| Audiovisuel                            | `mediainfo, ffprobe, ffmpeg, flac`             |
+| E-books                                | `verapdf, pdfbox, pdftk, epubcheck`            |
+| JSON et XML                            | `jq, xmllint, xmlstarlet`                      |
+| Schémas XML                            | `/opt/xml-schemas`                             |
+| Archives                               | `tar, gzip, bzip2, xz, zip, unzip, 7zip, zstd` |
+| Empaquetage                            | `bagit, jwattools`                             |
+| Administration et scripts              | `bash, python3, git, curl, wget, rsync, czkawka` |
+| Graphisme                              | `gnuplot`                                      |
 
 Un script complémentaire, `tool-versions`, permet de générer un inventaire JSON des versions des outils installés.
 
@@ -65,10 +66,22 @@ Placer les fichiers suivants dans un même répertoire de projet :
 ```text
 preservation-container/
 ├── Containerfile
-├── tool-versions
-├── start-session
-├── tika-analyze
-└── README.md
+├── README.md
+├── run-preservation.cmd
+├── run-preservation.ps1
+├── save-container.cmd
+├── params/
+│   ├── jhove-install.xml
+│   └── verapdf-install.xml
+├── scripts /
+│   ├── tool-versions
+│   ├── start-session
+│   └── tika-analyze
+└── xml/
+    ├── catalog.xml
+    ├── catalog.xsd
+    ├── combined-bnf.xsd
+    └── ...
 ```
 
 Depuis ce répertoire, construire l'image :
@@ -104,7 +117,7 @@ mkdir D:\Rapports
 ```
 Copier les fichiers à analyser dans le répertoire `D:\Donnees`, en utilisant les procédures habituelles de transfert de l'organisation.
 
-Le répertoire `D:\Rapports` doit être accessible en écriture à l'utilisateur utilisé par le conteneur. Dans l'image proposée, cet utilisateur possède l'UID et le GID 1000.
+Le répertoire `D:\Rapports` doit être accessible en écriture à l'utilisateur utilisé par le conteneur. Dans l'image proposée, cet utilisateur possède l'UID et le GID `1000`.
 
 ## 6. Lancement du conteneur
 
@@ -305,7 +318,7 @@ tool-versions "$REPORT_DIR/tool-versions.json"
 
 Le rapport permet de documenter les versions des outils de caractérisation présents dans l'environnement.
 
-Pour afficher les informations relatives à ExifTool et FFprobe :
+Pour afficher les informations relatives à `ExifTool` et `FFprobe` :
 
 ```bash
 jq '{

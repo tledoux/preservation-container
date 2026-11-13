@@ -1,0 +1,287 @@
+#!/usr/bin/env bash
+
+# ==========================================================
+# Preservation Container
+# Analyse de la distribution des types MIME
+# ==========================================================
+
+set -euo pipefail
+
+# ----------------------------------------------------------
+# Configuration
+# ----------------------------------------------------------
+
+INPUT_DIR="${1:-/mnt/input}"
+OUTPUT_DIR="${2:-}"
+
+if [ -z "${OUTPUT_DIR}" ]; then
+    # Une session doit avoir été initialisée au préalable.
+    if [[ -z "${REPORT_DIR:-}" || ! -d "$REPORT_DIR" ]]; then
+        echo "ERREUR : initialiser d'abord une session avec :" >&2
+        echo "  source /usr/local/bin/start-session" >&2
+        exit 1
+    fi
+    OUTPUT_DIR="${REPORT_DIR}/mime-analysis"
+fi
+
+mkdir -p "${OUTPUT_DIR}"
+CSV_FILE="${OUTPUT_DIR}/mime_distribution.csv"
+DATA_FILE="${OUTPUT_DIR}/mime_distribution.dat"
+PNG_FILE="${OUTPUT_DIR}/mime_distribution.png"
+GP_FILE="${OUTPUT_DIR}/mime_distribution.gp"
+# Nombre de types MIME affichés dans le graphique
+TOP_N=10
+# ----------------------------------------------------------
+# Vérifications
+# ----------------------------------------------------------
+
+if ! command -v file >/dev/null 2>&1; then
+    echo "ERREUR : file n'est pas installé."
+    exit 1
+fi
+
+if ! command -v gnuplot >/dev/null 2>&1; then
+    echo "ERREUR : gnuplot n'est pas installé."
+    exit 1
+fi
+
+if [[ ! -d "$INPUT_DIR" ]]; then
+    echo "ERREUR : répertoire introuvable : $INPUT_DIR"
+    exit 1
+fi
+
+mkdir -p "$OUTPUT_DIR"
+
+# ----------------------------------------------------------
+# Analyse MIME
+# ----------------------------------------------------------
+
+declare -A MIME_COUNT
+
+TOTAL=0
+
+echo "=================================================="
+echo " Analyse des types MIME"
+echo "=================================================="
+echo
+echo "Source       : $INPUT_DIR"
+echo "Destination  : $OUTPUT_DIR"
+echo
+
+while IFS= read -r -d '' FILE_PATH; do
+
+    MIME=$(file --brief --mime-type -- "$FILE_PATH" 2>/dev/null || true)
+
+    if [[ -z "$MIME" ]]; then
+        MIME="application/octet-stream"
+    fi
+
+    MIME_COUNT["$MIME"]=$(( ${MIME_COUNT["$MIME"]:-0} + 1 ))
+
+    TOTAL=$((TOTAL + 1))
+
+done < <(
+    find "$INPUT_DIR" -type f -print0
+)
+
+if [[ "$TOTAL" -eq 0 ]]; then
+    echo "Aucun fichier trouvé dans $INPUT_DIR"
+    exit 0
+fi
+
+echo "Nombre total de fichiers : $TOTAL"
+echo "Nombre de types MIME     : ${#MIME_COUNT[@]}"
+echo
+
+# ----------------------------------------------------------
+# Export CSV
+# ----------------------------------------------------------
+
+printf 'mime_type,count,percentage\n' > "$CSV_FILE"
+for MIME in "${!MIME_COUNT[@]}"; do
+
+    COUNT=${MIME_COUNT["$MIME"]}
+
+    PERCENT=$(awk -v c="$COUNT" -v t="$TOTAL" \
+        'BEGIN { printf "%.2f", c * 100 / t }')
+
+    printf '"%s",%d,%s\n' \
+        "$MIME" "$COUNT" "$PERCENT" \
+        >> "$CSV_FILE"
+
+done
+
+# ----------------------------------------------------------
+# Tri décroissant par nombre de fichiers
+# ----------------------------------------------------------
+
+{
+    head -n 1 "$CSV_FILE"
+
+    tail -n +2 "$CSV_FILE" |
+        sort -t ',' -k2,2nr
+
+} > "${CSV_FILE}.tmp"
+
+mv "${CSV_FILE}.tmp" "$CSV_FILE"
+
+# ----------------------------------------------------------
+# Préparation des données gnuplot : Top N + Autres
+# ----------------------------------------------------------
+# Nombre de fichiers représentés dans le Top N
+TOP_COUNT=0
+# Nombre de fichiers hors Top N
+OTHER_COUNT=0
+
+printf '# index mime_type count percentage\n' > "$DATA_FILE"
+
+# Nombre de types MIME présents dans le CSV
+TOTAL_TYPES=$(($(wc -l < "$CSV_FILE") - 1))
+
+# ----------------------------------------------------------
+# Extraction des types MIME du Top N
+# ----------------------------------------------------------
+INDEX=0
+tail -n +2 "$CSV_FILE" |
+    head -n "$TOP_N" |
+    while IFS=',' read -r MIME COUNT PERCENT; do
+        MIME=${MIME//\"/}
+        INDEX=$((INDEX + 1))
+        printf '%s %s %s %s\n' \
+            "$INDEX" "$MIME" "$COUNT" "$PERCENT"
+    done >> "$DATA_FILE"
+
+# ----------------------------------------------------------
+# Calcul du nombre de fichiers hors Top N
+# ----------------------------------------------------------
+
+#TOP_COUNT=$(awk 'NR > 1 {sum += $2} END {print sum+0}' \
+#    "$CSV_FILE" \
+#    < <(tail -n +2 "$CSV_FILE"))
+
+TOP_COUNT=$(tail -n +2 "$CSV_FILE" |
+    head -n "$TOP_N" |
+    awk -F',' '{sum += $2} END {print sum+0}')
+    
+OTHER_COUNT=$((TOTAL - TOP_COUNT))
+
+# ----------------------------------------------------------
+# Calcul du pourcentage Autres
+# ----------------------------------------------------------
+
+OTHER_PERCENT=$(awk \
+    -v count="$OTHER_COUNT" \
+    -v total="$TOTAL" \
+    'BEGIN {
+        if (total > 0)
+            printf "%.2f", count * 100 / total
+        else
+            print "0.00"
+    }')
+
+# ----------------------------------------------------------
+# Ajout de la barre Autres
+# ----------------------------------------------------------
+
+if [[ "$OTHER_COUNT" -gt 0 ]]; then
+    INDEX=$((INDEX + 1))
+    printf '%s Autres %s %s\n' \
+        "$INDEX" "$OTHER_COUNT" "$OTHER_PERCENT" \
+        >> "$DATA_FILE"
+
+fi
+
+echo
+echo "Types MIME détectés : $TOTAL_TYPES"
+echo "Types MIME affichés : $TOP_N"
+echo "Fichiers dans Autres : $OTHER_COUNT"
+echo "Pourcentage Autres : ${OTHER_PERCENT}%"
+
+# ----------------------------------------------------------
+# Génération du graphique
+# ----------------------------------------------------------
+
+cat > "$GP_FILE" <<EOF
+set terminal pngcairo enhanced size 1600,1000 font "DejaVu Sans,10"
+set output "${PNG_FILE}"
+set encoding utf8
+set title "Distribution des ${TOP_N} principaux types MIME" font ",16"
+
+set xlabel "Type MIME"
+set ylabel "Nombre de fichiers"
+
+set style data histograms
+set style histogram
+set style fill solid 0.75 border -1
+
+set boxwidth 0.75
+
+set xtics rotate by -45 right
+set xtics font ",8"
+
+set grid ytics
+# set grid back
+set grid front
+
+set border 3
+
+set key off
+
+set datafile separator whitespace
+
+set style line 1 linewidth 1
+
+set format y "%.0f"
+
+set xtics out
+
+set lmargin 12
+set rmargin 3
+set bmargin 12
+set tmargin 4
+
+plot "${DATA_FILE}" using 3:xticlabels(2) \
+    with boxes title "Nombre de fichiers", \
+    "" using 1:(\$3 / 2):3 \
+    with labels center \
+    offset 0,0 \
+    font ",9" \
+    textcolor rgb "white" \
+    notitle
+
+unset output
+
+set terminal sixel
+plot "${DATA_FILE}" using 3:xticlabels(2) \
+    with boxes title "Nombre de fichiers", \
+    "" using 1:(\$3 / 2):3 \
+    with labels center \
+    offset 0,0 \
+    font ",9" \
+    textcolor rgb "white" \
+    notitle
+
+EOF
+
+gnuplot "$GP_FILE"
+
+# ----------------------------------------------------------
+# Résumé
+# ----------------------------------------------------------
+
+echo
+echo "=================================================="
+echo " Analyse terminée"
+echo "=================================================="
+echo
+echo "Fichiers générés :"
+echo "  PNG : $PNG_FILE"
+echo "  CSV : $CSV_FILE"
+echo "  DAT : $DATA_FILE"
+echo
+echo "Distribution MIME :"
+echo
+
+column -s ',' -t "$CSV_FILE" 2>/dev/null || cat "$CSV_FILE"
+
+echo
