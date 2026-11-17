@@ -59,6 +59,10 @@ checks = {
     "pdftk": ["pdftk", "--version"],
     "rsync": ["rsync", "--version"],
     "czkawka_cli": ["czkawka_cli", "--version"],
+    "pandoc": ["pandoc", "--version"],
+    "djvulibre": ["ddjvu", "--help"],
+    "tesseract": ["tesseract", "--version"],
+    "libtiff": ["tiffinfo", "-h"],
 }
 tools = {}
 

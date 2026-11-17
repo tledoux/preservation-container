@@ -1,0 +1,21 @@
+# See https://pandoc.org/MANUAL.html#defaults-files
+# Format d'entrée (Markdown étendu type GitHub)
+from: gfm+footnotes+task_lists
+
+# Forcer WeasyPrint via HTML5
+to: html5
+pdf-engine: weasyprint
+
+# Créer un document autonome (indispensable pour embarquer le CSS)
+standalone: true
+
+# Feuille de style CSS personnalisée
+css:
+  - ${USERDATA}/readme-style.css
+
+# Coloration syntaxique du code (ex: pygments, tango, espresso, kate, monochrome)
+highlight-style: tango
+
+# Métadonnées par défaut
+metadata:
+  lang: fr

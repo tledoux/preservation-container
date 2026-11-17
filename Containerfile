@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     util-linux \
     bsdextrautils \
     binutils \
+    make \
     xxd \
     less \
     nano \
@@ -48,6 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     python3-venv \
+    python3-lxml \
     openssl \
     acl \
     attr \
@@ -59,7 +61,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pdftk-java \
     czkawka-cli \
     pandoc \
+    libharfbuzz-subset0 \
+    pkg-config \
+    djvulibre-bin \
+    libdjvulibre-dev \
+    libdjvulibre-text \
+    tesseract-ocr \
+    tesseract-ocr-fra \
+    libtiff-tools \
     && rm -rf /var/lib/apt/lists/*
+
+#     ocrodjvu \
+
+#    texlive \
+#    librsvg2-bin \
 
 # Versions des outils de préservation
 ARG DROID_VERSION=6.9.14
@@ -179,7 +194,8 @@ RUN wget -O /tmp/siegfried.zip \
 COPY xml/ /opt/xml-schemas/
 ENV XML_CATALOG_FILES="/opt/xml-schemas/catalog.xml"
 
-# Installation de BagIt et jpylyzer dans un environnement Python isolé
+# Installations des programmes basés sur Python dans un environnement Python isolé
+# BagIt, jpylyzer, eml2pdf, ocrdjvu
 RUN python3 -m venv /opt/python-venv \
     && /opt/python-venv/bin/pip install --no-cache-dir bagit \
     && ln -s /opt/python-venv/bin/bagit.py /usr/local/bin/bagit \
@@ -188,16 +204,13 @@ RUN python3 -m venv /opt/python-venv \
     && /opt/python-venv/bin/pip install --no-cache-dir eml2pdf \
     && ln -s /opt/python-venv/bin/eml2pdf /usr/local/bin/eml2pdf \
     && ln -s /opt/python-venv/bin/weasyprint /usr/local/bin/weasyprint
+    
+# RUN /opt/python-venv/bin/pip install --no-cache-dir djvulibre-python
+#    && /opt/python-venv/bin/pip install --no-cache-dir ocrodjvu \
+#    && ln -s /opt/python-venv/bin/ocrodjvu /usr/local/bin/ocrodjvu \
 
-# Installation de BagIt dans un environnement Python isolé
-# RUN python3 -m venv /opt/bagit-venv \
-#    && /opt/bagit-venv/bin/pip install --no-cache-dir bagit \
-#    && ln -s /opt/bagit-venv/bin/bagit.py /usr/local/bin/bagit
-
-# Installation de jpylyzer
-# RUN python3 -m venv /opt/jpylyzer-venv \
-#     && /opt/jpylyzer-venv/bin/pip install --no-cache-dir jpylyzer==2.2.1 \
-#    && ln -s /opt/jpylyzer-venv/bin/jpylyzer /usr/local/bin/jpylyzer
+#    && cd /usr/lib \
+#    && ln -s /lib/x86_64-linux-gnu/libdjvulibre.so.21 libdjvulibre.so.21 
 
 ENV PATH="/usr/local/bin:/opt/siegfried:/opt/jhove:/opt/verapdf:/opt/bagit-venv/bin:${PATH}"
 
@@ -223,6 +236,10 @@ fi\n\
 # Les fichiers sources restent accessibles via /mnt/input.
 # Le montage hôte déterminera les permissions effectives.
 USER analyst
+
+RUN mkdir -p /home/analyst/.local/share/pandoc/defaults
+COPY params/readme.yaml /home/analyst/.local/share/pandoc/defaults/readme.yaml
+COPY params/readme-style.css /home/analyst/.local/share/pandoc/readme-style.css
 
 # Télécharger les signatures Siegfried pendant la construction
 # RUN sf -home "/home/analyst/.local/share/siegfried" -update

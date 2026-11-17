@@ -76,14 +76,13 @@ display-help() {
     printf "  ${WHITE}jpylyzer${RESET}      Validation JPEG 2000\n"
     printf "  ${WHITE}pdfbox${RESET}        Manipulation PDF\n"
     printf "  ${WHITE}pdftk${RESET}         Exploration PDF\n"
+    printf "  ${WHITE}pandoc${RESET}        Conversion de documents textuels\n"
     printf "  ${WHITE}bagit${RESET}         Création de packages BagIt\n"
     printf "  ${WHITE}jwattools${RESET}     Manipulation de fichiers WARC\n"
     printf "  ${WHITE}7z${RESET}            Manipulation de fichiers archive\n"
     printf "  ${WHITE}jq${RESET}            Manipulation de fichiers JSON\n"
     printf "  ${WHITE}fq${RESET}            Manipulation de fichiers binaires\n"
-    printf "  ${WHITE}czkawka${RESET}       Recherche de doublons\n"
-    
-    czkawka-cli
+    printf "  ${WHITE}czkawka_cli${RESET}   Recherche de doublons\n"
 
     printf "${BLUE}"
     printf "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"

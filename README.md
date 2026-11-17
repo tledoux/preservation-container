@@ -19,7 +19,8 @@ L'image repose sur Debian et regroupe les utilitaires Unix classiques, les outil
 | Identification                         | `file, droid, siegfried`                       |
 | Métadonnées                            | `exiftool, tika, jhove, jpylyzer`              |
 | Audiovisuel                            | `mediainfo, ffprobe, ffmpeg, flac`             |
-| E-books                                | `verapdf, pdfbox, pdftk, epubcheck`            |
+| Images                                 | `djvu, libtiff, tesseract`                     |
+| E-books                                | `verapdf, pdfbox, pdftk, epubcheck, pandoc`    |
 | JSON et XML                            | `jq, xmllint, xmlstarlet`                      |
 | Schémas XML                            | `/opt/xml-schemas`                             |
 | Archives                               | `tar, gzip, bzip2, xz, zip, unzip, 7zip, zstd` |
